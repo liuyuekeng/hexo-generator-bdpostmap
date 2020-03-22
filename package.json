@@ -1,5 +1,18 @@
 {
     "name": "hexo-generator-bdpostmap",
     "version": "0.0.1",
-    "main": "index"
+    "description": "A plugin for the Hexo static site tool to provide a page with an interactive map of geo tagged posts and pages.",
+    "main": "index",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": {
+        "name": "liuyuekeng",
+        "url": "https://www.hundred.cool/blog"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "ejs": "^1.0.0",
+        "utils-merge": "^1.0.0"
+    }
 }
