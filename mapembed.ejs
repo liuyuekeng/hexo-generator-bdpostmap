@@ -1,0 +1,75 @@
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=<%= baiduMapAK %>"></script>
+<div id="bdmap-container" style="height: 700px; width: 90%;"></div> 
+<script type="text/javascript"> 
+
+var url = '<%= url %>';
+
+function PostOverlay(location, data) {
+    this._location = location;
+    this._data = data;
+}
+PostOverlay.prototype = new BMap.Overlay();
+PostOverlay.prototype.initialize = function (map) {
+    this._map = map;
+    var div = document.createElement("div");
+    div.style.background = '#fff';
+    div.style.border = '1px solid #aaa';
+    div.style.padding = '5px';
+    var data = this._data;
+    div.innerHTML = [
+        '<a href="', data.url, '"><b>', data.title ,'</b></a><br/>',
+        data.lastmod, '<br/>'
+    ].join('');
+    div.style.position = "absolute";
+    // 将div添加到覆盖物容器中
+    map.getPanes().markerPane.appendChild(div);
+    // 保存div实例
+    this._div = div;
+    // 需要将div元素作为方法的返回值，当调用该覆盖物的show、
+    // hide方法，或者对覆盖物进行移除时，API都将操作此元素。
+    return div;
+}
+PostOverlay.prototype.draw = function () {
+    var position = this._map.pointToOverlayPixel(this._location);
+    this._div.style.left = position.x + 'px';
+    this._div.style.top = position.y + 'px';
+}
+
+function downloadUrl(url, callback) {
+  var request = window.ActiveXObject ?
+    new ActiveXObject('Microsoft.XMLHTTP') :
+    new XMLHttpRequest;
+  request.onreadystatechange = function() {
+    if (request.readyState == 4) {
+      //request.onreadystatechange = doNothing;
+      callback(request, request.status);
+    }
+  };
+  request.open('GET', url, true);
+  request.send(null);
+}
+
+function loadMarkers() {
+    downloadUrl(url, function (data) {
+        var postInfos = JSON.parse(data.response);
+        for (var i = 0; i < postInfos.length; i ++) {
+            var post = postInfos[i];
+            var postOverlay = new PostOverlay({
+                lng: post.lng,
+                lat: post.lat
+            }, post);
+            map.addOverlay(postOverlay);
+        }
+    })
+}
+
+loadMarkers();
+
+var map = new BMap.Map("bdmap-container");
+var point = new BMap.Point(116.404, 39.915);
+map.centerAndZoom(point, 1);
+//map.enableScrollWheelZoom(true);
+map.setMapStyleV2({     
+  styleId: '142b741c96675565cbb320d62c9a93fd'
+});
+</script>  
